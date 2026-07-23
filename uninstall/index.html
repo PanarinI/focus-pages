@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ember was removed</title>
+<style>
+  :root{ --bg:#0d0a07; --warm:#e8b25c; --ink:#e8dcc8; --ink-dim:#8a7a63; }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:radial-gradient(120% 80% at 50% 0%, #1a1109 0%, var(--bg) 62%);
+    color:var(--ink);
+    font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:clamp(28px,6vh,64px) 20px 56px;
+  }
+  h1{
+    display:flex; align-items:center; gap:14px;
+    font-size:clamp(26px,4vw,38px); font-weight:600; letter-spacing:-.02em;
+    margin:0 0 12px; text-align:center;
+  }
+  .say{
+    margin:0 0 clamp(22px,3.5vh,34px); text-align:center;
+    font-size:clamp(15px,2vw,18px); color:var(--ink-dim); max-width:46ch;
+  }
+  .say b{color:var(--warm); font-weight:600}
+  .card{
+    width:100%; max-width:640px; background:rgba(255,235,205,.03);
+    border:1px solid rgba(232,178,92,.18); border-radius:16px; padding:18px;
+  }
+  .card iframe{ display:block; width:100%; height:520px; border:none; border-radius:10px; background:transparent; }
+  .fallback{ text-align:center; color:var(--ink-dim); font-size:15px; padding:26px 10px; }
+  .fallback a{ color:var(--warm); text-decoration:none; }
+  .back{ margin-top:22px; font-size:14px; color:var(--ink-dim); text-align:center; }
+  .back a{ color:var(--warm); text-decoration:none; font-weight:600; }
+  .back a:hover{ text-decoration:underline; }
+</style>
+</head>
+<body>
+
+  <h1>
+    <svg width="38" height="38" viewBox="0 0 64 64" aria-hidden="true">
+      <defs><radialGradient id="g"><stop offset="0" stop-color="#f2c377"/><stop offset="1" stop-color="#8a4f22"/></radialGradient></defs>
+      <circle cx="32" cy="34" r="15" fill="url(#g)" opacity=".45"/>
+    </svg>
+    The hearth is out
+  </h1>
+  <p class="say">Thanks for giving <b>Ember</b> a try. If you tell us why you left,
+  the hearth will burn better for the next person — it takes half a minute.</p>
+
+  <div class="card">
+    <iframe id="form" loading="lazy" title="Why did you remove Ember?">Loading…</iframe>
+    <div class="fallback" id="fallback" hidden>
+      The short «why» form will appear here soon.<br>
+      Until then — thank you for the time you spent by the fire.
+    </div>
+  </div>
+
+  <p class="back" id="back" hidden>
+    Changed your mind? <a id="storelink" href="#" target="_blank">Reinstall Ember</a>
+  </p>
+
+  <script>
+    // Заполняется по мере готовности (форма — автор; стор-ссылка — после публикации, веха 1).
+    const FORM_URL  = '';   // Google-форма причин удаления (embedded=true)
+    const STORE_URL = '';   // https://chromewebstore.google.com/detail/<id>
+    const f = document.getElementById('form');
+    if (FORM_URL) { f.src = FORM_URL; }
+    else { f.remove(); document.getElementById('fallback').hidden = false; }
+    if (STORE_URL) {
+      document.getElementById('storelink').href = STORE_URL;
+      document.getElementById('back').hidden = false;
+    }
+  </script>
+</body>
+</html>
