@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minimalist Timer — Privacy Policy</title>
+<style>
+  :root{
+    --bg:#0e1638; --bg2:#05060f; --warm:#f0be6e; --ink:#dde3f2; --ink-dim:#8b95b5;
+    --card:rgba(255,255,255,.035); --line:rgba(255,255,255,.09);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:radial-gradient(130% 90% at 50% 0%, var(--bg) 0%, var(--bg2) 68%);
+    color:var(--ink); min-height:100vh;
+    font:16px/1.62 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column; align-items:center;
+    padding:clamp(28px,6vh,64px) 20px 64px;
+  }
+  main{width:100%; max-width:660px}
+  h1{
+    display:flex; align-items:center; gap:14px;
+    font-size:clamp(26px,4.2vw,38px); font-weight:600;
+    letter-spacing:-.02em; margin:0 0 6px;
+  }
+  h1 svg{flex:none}
+  .updated{color:var(--ink-dim); font-size:14px; margin:0 0 clamp(24px,4vh,36px)}
+  h2{
+    font-size:clamp(17px,2.4vw,20px); font-weight:600; letter-spacing:-.01em;
+    margin:32px 0 8px; color:#fff;
+  }
+  p{margin:0 0 12px; color:var(--ink)}
+  .lead{font-size:clamp(17px,2.2vw,19px); color:var(--ink); max-width:52ch}
+  .lead b{color:var(--warm); font-weight:600}
+  ul{margin:0 0 12px; padding:0 0 0 4px; list-style:none}
+  li{position:relative; padding:6px 0 6px 24px; color:var(--ink)}
+  li::before{
+    content:""; position:absolute; left:2px; top:14px;
+    width:6px; height:6px; border-radius:50%; background:var(--warm); opacity:.8;
+  }
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:18px 20px; margin:16px 0;
+  }
+  code{
+    background:rgba(255,255,255,.06); border-radius:5px; padding:1px 6px;
+    font:14px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace; color:var(--ink);
+  }
+  a{color:var(--warm)}
+  .foot{margin-top:44px; padding-top:20px; border-top:1px solid var(--line);
+        color:var(--ink-dim); font-size:14px}
+</style>
+</head>
+<body>
+<main>
+
+  <h1>
+    <svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true">
+      <defs><radialGradient id="star">
+        <stop offset="0%" stop-color="#ffe6b0"/><stop offset="55%" stop-color="#f0be6e"/><stop offset="100%" stop-color="#b06d1f"/>
+      </radialGradient></defs>
+      <circle cx="32" cy="32" r="12" fill="url(#star)" style="filter:drop-shadow(0 0 10px rgba(240,190,110,.55))"/>
+    </svg>
+    Privacy Policy
+  </h1>
+  <p class="updated">Minimalist Timer · Last updated 27 July 2026</p>
+
+  <p class="lead">Minimalist Timer is <b>private by design</b>. It runs entirely on your device. There is no account, no sign-up, and nothing to track.</p>
+
+  <h2>What we collect</h2>
+  <p><b>Nothing.</b> The Minimalist Timer extension does not collect, store on any server, transmit, or sell any personal information. It shows no ads and does not track what you do inside the timer.</p>
+
+  <h2>Your settings stay on your device</h2>
+  <p>Your preferences — timer length, sound and volume choices, and whether the return-to-session tab is enabled — are saved locally in your own browser using Chrome’s <code>storage</code> API. This data never leaves your device and is never sent to us or anyone else. Removing the extension removes it.</p>
+
+  <h2>Why the extension asks for permissions</h2>
+  <p>Every permission is used solely to run the timer on your device. None of them send your data anywhere:</p>
+  <ul>
+    <li><code>sidePanel</code> — show the timer in the browser side panel.</li>
+    <li><code>storage</code> — remember your settings locally, as described above.</li>
+    <li><code>offscreen</code> — keep the sound playing when the panel is closed.</li>
+    <li><code>scripting</code> — draw the small return-to-session tab on the page you are viewing.</li>
+    <li><code>host access</code> (optional, only if you turn the tab on) — show that return-to-session tab across websites. It reads and sends nothing.</li>
+  </ul>
+
+  <h2>No third parties, no network</h2>
+  <p>The Minimalist Timer extension makes no network requests and works fully offline. No data from the extension is shared with, sold to, or processed by any third party. The sound is generated on your device — nothing is streamed or downloaded.</p>
+
+  <h2>Our web pages</h2>
+  <p>The install and uninstall pages (like this one) are ordinary web pages, separate from the extension. They may use privacy-friendly, cookieless analytics that counts visits only — no personal data, and nothing tied to you.</p>
+
+  <h2>Children</h2>
+  <p>The extension collects no data from anyone, including children.</p>
+
+  <h2>Changes to this policy</h2>
+  <p>If this policy ever changes, the “Last updated” date above will change with it. Because the extension collects no data, any change will concern wording only.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about privacy? Email <a href="mailto:callmestewie90@gmail.com">callmestewie90@gmail.com</a>.</p>
+
+  <p class="foot">This policy applies to the Minimalist Timer browser extension for Chrome.</p>
+
+</main>
+</body>
+</html>

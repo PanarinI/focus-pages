@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ember is installed</title>
+<title>Minimalist Timer is installed</title>
 <style>
-  :root{ --bg:#0d0a07; --warm:#e8b25c; --ink:#e8dcc8; --ink-dim:#8a7a63; }
+  :root{ --bg:#0e1638; --bg2:#05060f; --warm:#f0be6e; --ink:#dde3f2; --ink-dim:#8b95b5; }
   *{box-sizing:border-box}
   html,body{margin:0}
   body{
-    background:radial-gradient(120% 80% at 50% 0%, #1a1109 0%, var(--bg) 62%);
+    background:radial-gradient(130% 90% at 50% 0%, var(--bg) 0%, var(--bg2) 66%);
     color:var(--ink);
     font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     display:flex; flex-direction:column; align-items:center;
@@ -17,45 +17,45 @@
   }
   h1{
     display:flex; align-items:center; gap:16px;
-    font-size:clamp(30px,4.6vw,44px); font-weight:600;
+    font-size:clamp(28px,4.4vw,42px); font-weight:600;
     letter-spacing:-.02em; margin:0 0 14px; text-align:center;
   }
   h1 svg{flex:none}
   .say{
     margin:0 0 clamp(26px,4vh,40px); text-align:center;
-    font-size:clamp(16px,2.1vw,20px); color:var(--ink-dim); max-width:44ch;
+    font-size:clamp(16px,2.1vw,20px); color:var(--ink-dim); max-width:46ch;
   }
   .say b{color:var(--warm); font-weight:600}
   .shot{width:100%; max-width:940px; height:auto; display:block}
   .after{
     margin:clamp(26px,4vh,40px) 0 0; text-align:center;
-    font-size:clamp(16px,2.1vw,19px); max-width:42ch;
+    font-size:clamp(16px,2.1vw,19px); max-width:44ch;
   }
 </style>
 </head>
 <body>
 
   <h1>
-    <svg width="46" height="46" viewBox="0 0 64 64" aria-hidden="true">
-      <defs><radialGradient id="glow">
-        <stop offset="0%" stop-color="#ffd08a"/><stop offset="55%" stop-color="#e8912c"/><stop offset="100%" stop-color="#8c3f10"/>
+    <svg width="42" height="42" viewBox="0 0 64 64" aria-hidden="true">
+      <defs><radialGradient id="star">
+        <stop offset="0%" stop-color="#ffe6b0"/><stop offset="55%" stop-color="#f0be6e"/><stop offset="100%" stop-color="#b06d1f"/>
       </radialGradient></defs>
-      <circle cx="32" cy="32" r="13" fill="url(#glow)" style="filter:drop-shadow(0 0 11px rgba(255,160,60,.6))"/>
+      <circle cx="32" cy="32" r="13" fill="url(#star)" style="filter:drop-shadow(0 0 11px rgba(240,190,110,.6))"/>
     </svg>
-    Ember is installed
+    Minimalist Timer is installed
   </h1>
 
-  <p class="say">Click the puzzle piece <b>(1)</b> in the top right of your browser, then click the pin <b>(2)</b> next to Ember:</p>
+  <p class="say">Click the puzzle piece <b>(1)</b> in the top right of your browser, then click the pin <b>(2)</b> next to Minimalist Timer:</p>
 
   <!-- Макет окна Chrome со шагами прямо на цели (паттерн эталонных WP метода) -->
   <svg class="shot" viewBox="0 0 1000 400" xmlns="http://www.w3.org/2000/svg" role="img"
-       aria-label="Chrome toolbar: click the puzzle piece, then the pin next to Ember">
+       aria-label="Chrome toolbar: click the puzzle piece, then the pin next to Minimalist Timer">
     <defs>
       <filter id="drop" x="-20%" y="-20%" width="140%" height="150%">
         <feDropShadow dx="0" dy="6" stdDeviation="9" flood-color="#000" flood-opacity=".28"/>
       </filter>
       <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
-        <path d="M0 0.6 L8.4 4.5 L0 8.4 Z" fill="#d9531e"/>
+        <path d="M0 0.6 L8.4 4.5 L0 8.4 Z" fill="#e0912e"/>
       </marker>
     </defs>
 
@@ -75,7 +75,7 @@
       <rect x="152" y="72" width="440" height="27" rx="13.5" fill="#f1f3f4"/>
       <!-- иконки справа: пазл · боковая панель · профиль · меню -->
       <g fill="#5f6368">
-        <path d="M690 76.6h5.6a2.7 2.7 0 1 1 4.9 0h5.6c.8 0 1.4.6 1.4 1.4v5a2.7 2.7 0 1 0 0 4.9v5c0 .8-.6 1.4-1.4 1.4h-5.6a2.7 2.7 0 1 0-4.9 0H690c-.8 0-1.4-.6-1.4-1.4v-5.6a2.7 2.7 0 1 1 0-4.9v-4.4c0-.8.6-1.4 1.4-1.4Z"/>
+        <path d="M690 76.6h5.6a2.7 2.7 0 1 1 4.9 0h5.6c.8 0 1.4.6 1.4 1.4v5a2.7 2.7 0 1 0 0 4.9v5c0 .8-.6 1.4-1.4 1.4h-5.6a2.7 2.7 0 1 0-4.9 0H690c-.8 0-1.4-.6-1.4-1.4v-5.6a2.7 2.7 0 1 1 0-4.9v-4.4c0-.8.6-1.4 1.4-1.4Z" fill="none" stroke="#5f6368" stroke-width="1.7" stroke-linejoin="round"/>
         <rect x="742" y="76" width="18" height="18" rx="3" fill="none" stroke="#5f6368" stroke-width="1.8"/>
         <line x1="754" y1="76" x2="754" y2="94" stroke="#5f6368" stroke-width="1.8"/>
         <circle cx="794" cy="85" r="9" fill="#5f6368" opacity=".85"/>
@@ -90,9 +90,9 @@
         <text x="622" y="199" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="11.5" fill="#5f6368">These extensions don’t need to see and change</text>
         <text x="622" y="214" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="11.5" fill="#5f6368">information on this site.</text>
         <!-- строка нашего расширения -->
-        <circle cx="631" cy="243" r="9.5" fill="#1a1109"/>
-        <circle cx="631" cy="243" r="5" fill="url(#glow)"/>
-        <text x="652" y="248" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="13.5" fill="#202124">Ember</text>
+        <circle cx="631" cy="243" r="9.5" fill="#0e1638"/>
+        <circle cx="631" cy="243" r="5" fill="url(#star)"/>
+        <text x="652" y="248" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="13.5" fill="#202124">Minimalist Timer</text>
         <path d="M885 235h10l-1.3 8.6 5 5.2v2.6h-17.4v-2.6l5-5.2L885 235Z" fill="none" stroke="#3c4043" stroke-width="1.7" stroke-linejoin="round"/>
         <path d="M888.7 251.4V259" stroke="#3c4043" stroke-width="1.7" stroke-linecap="round"/>
         <line x1="616" y1="270" x2="920" y2="270" stroke="#e8eaed" stroke-width="1.4"/>
@@ -105,21 +105,21 @@
     </g>
 
     <!-- шаг 1: обводка пазла + стрелка + номер -->
-    <circle cx="699" cy="85" r="19" fill="none" stroke="#d9531e" stroke-width="3.2"/>
-    <path d="M646 85h26" stroke="#d9531e" stroke-width="3.2" fill="none" marker-end="url(#ah)"/>
-    <circle cx="614" cy="85" r="25" fill="#fff" stroke="#d9531e" stroke-width="3.2"/>
+    <circle cx="699" cy="85" r="19" fill="none" stroke="#e0912e" stroke-width="3.2"/>
+    <path d="M646 85h26" stroke="#e0912e" stroke-width="3.2" fill="none" marker-end="url(#ah)"/>
+    <circle cx="614" cy="85" r="25" fill="#fff" stroke="#e0912e" stroke-width="3.2"/>
     <text x="614" y="94" text-anchor="middle" font-family="-apple-system,Segoe UI,Roboto,sans-serif"
-          font-size="26" font-weight="700" fill="#d9531e">1</text>
+          font-size="26" font-weight="700" fill="#e0912e">1</text>
 
     <!-- шаг 2: обводка пина + стрелка + номер -->
-    <circle cx="889" cy="245" r="21" fill="none" stroke="#d9531e" stroke-width="3.2"/>
-    <path d="M952 296q-14-26-40-38" stroke="#d9531e" stroke-width="3.2" fill="none" marker-end="url(#ah)"/>
-    <circle cx="957" cy="322" r="25" fill="#fff" stroke="#d9531e" stroke-width="3.2"/>
+    <circle cx="889" cy="245" r="21" fill="none" stroke="#e0912e" stroke-width="3.2"/>
+    <path d="M952 296q-14-26-40-38" stroke="#e0912e" stroke-width="3.2" fill="none" marker-end="url(#ah)"/>
+    <circle cx="957" cy="322" r="25" fill="#fff" stroke="#e0912e" stroke-width="3.2"/>
     <text x="957" y="331" text-anchor="middle" font-family="-apple-system,Segoe UI,Roboto,sans-serif"
-          font-size="26" font-weight="700" fill="#d9531e">2</text>
+          font-size="26" font-weight="700" fill="#e0912e">2</text>
   </svg>
 
-  <p class="after">That’s it. Click the ember whenever you need to focus.</p>
+  <p class="after">That’s it. Tap the star whenever you need to focus.</p>
 
 </body>
 </html>
