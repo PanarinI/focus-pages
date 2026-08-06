@@ -33,8 +33,23 @@
   }
 </style>
 
-  <!-- Аналитика welcome-страницы (установка ≈ страница открылась 1 раз):
-       Umami — счётчик установок real-time (канон 4.5). Clarity — тепловая карта. -->
+  <!-- Аналитика welcome-страницы (установка ≈ страница открылась 1 раз).
+       GA4 (08-06) — ОСНОВНОЙ счётчик установок. Ресурс `focus-pages` создан автором: он в нём
+       администратор, поэтому данные читаются по Data API и копятся в реестр студии автоматически.
+       Ресурс листинга (G-HNVT5MM6Y4) на это не годится — он живёт в служебном аккаунте
+       «Chrome Web Store developer properties», где администратора нет ни у кого из разработчиков.
+       Umami — остаётся живым, но только глазами: API-ключи у них с тарифа PRO. -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X9WZSNCLXF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-X9WZSNCLXF');
+    // отдельное именованное событие: page_view сюда может прийти и при повторном заходе,
+    // а нам нужен чистый счёт установок — его и считаем в реестре
+    gtag('event', 'install_welcome');
+  </script>
+
   <script defer src="https://cloud.umami.is/script.js" data-website-id="7999549b-1d50-4cbb-9563-39118274a20b"></script>
   <script>
     (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
