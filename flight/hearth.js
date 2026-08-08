@@ -7,20 +7,21 @@
 //   кручение = ТОЛЬКО завод в покое; в сессии скролл не перехватывается.
 
 const el = {};
-['room', 'star', 'sparks', 'timeslider', 'timerow', 'ticks', 'num', 'wrap', 'stage', 'home', 'pip', 'volume', 'fast', 'premium', 'energy', 'masking', 'harmony', 'finish', 'settoggle', 'settings', 'sndhint', 'sndwave', 'sndmute', 'glowrow', 'glowtoggle', 'ratebar', 'rstars']
+['room', 'star', 'sparks', 'timeslider', 'timerow', 'ticks', 'num', 'wrap', 'stage', 'home', 'pip', 'volknob', 'volarc', 'voldot', 'fast', 'premium', 'harmony', 'finish', 'settoggle', 'settings', 'sndhint', 'sndwave', 'sndmute', 'glowrow', 'glowtoggle', 'ratebar', 'rstars',
+ 'mixknob', 'mixarc', 'mixdot', 'energyknob', 'energyarc', 'energydot', 'maskknob', 'maskarc', 'maskdot']
   .forEach((id) => { el[id] = document.getElementById(id); });
 
 const RING_C = 2 * Math.PI * 90;
 const GROW_K = 2.4;                       // фронт-загрузка роста жара (см. render: рост СЕССИЯ-ОТНОСИТЕЛЬНЫЙ к плато)
 const SLEEP_AFTER = 10 * 60;             // забытая пауза → очаг засыпает (сек; fast делит на 20)
 const WHEEL_STEP_PX = 60;                // порог аккумулятора завода (свайп ≠ шквал)
-const QUENCH = () => (el.fast.checked ? 1.5 : 4);   // быстрый выдох ручного «завершить»
+const QUENCH = () => 0.4;   // ручное «завершить» → почти мгновенный выдох (сам нажал — в плавности нет смысла; не 0, иначе щелчок; engine клампит min 0.3)
 
 let dialMin = +(localStorage.getItem('hearth.dial') || 15);   // дефолт 15 (реш. автора 07-18): ADHD-канон 15/5 · шанс дожить до «рассвета» в первом сеансе
 let infinite = localStorage.getItem('hearth.dial') === 'Infinity';
 if (infinite) dialMin = Infinity;
 let twisting = false, downAt = 0, sleepTimer = null, wheelAcc = 0, pendingEmber = null;
-let lastGrown = 0, grownAtDawn = 0, grownAtExt = 0, lastPhase = 'off';
+let lastGrown = 0, grownAtDawn = 0, grownAtExt = 0, lastPhase = 'off', lastProg = 0;
 
 // В расширении звук живёт в offscreen-документе и переживает закрытие панели (remote.js — тот же контракт).
 // На локальном стенде (file://, localhost) chrome.runtime нет — движок работает прямо здесь, как раньше.
@@ -69,7 +70,7 @@ function renderEmbers() {
   const tot = day.reduce((s, e) => s + e.min, 0);
   const parts = [];
   if (day.length) parts.push(`${day.length} ${plural(day.length)} · ${fmt(tot)}`);
-  if (lifeMin >= 60) parts.push(`прожито очагом ${fmt(lifeMin)}`);   // тихая честность за ховером, не витрина
+  if (lifeMin >= 60) parts.push(`focused ${fmt(lifeMin)} so far`);   // тихая честность за ховером, не витрина
   el.stage.title = parts.join(' — ');
 }
 
@@ -81,10 +82,10 @@ let lifeMin = 0, lifeHeat = 0;
 function calcLife() {
   lifeMin = embers.reduce((s, e) => s + e.min, 0);
   lifeHeat = 1 - Math.exp(-lifeMin / TAU_LIFE);
-  // тон комнаты: центр дымки едва теплеет с прожитым (свежий очаг = исходный #1a1109)
-  const r = Math.round(26 + 13 * lifeHeat), g = Math.round(17 + 7 * lifeHeat), b = Math.round(9 + lifeHeat);
+  // тон поля: центр космоса едва теплеет с прожитым (свежее поле = очень глубокий синий, почти чёрный)
+  const r = Math.round(14 + 16 * lifeHeat), g = Math.round(22 + 12 * lifeHeat), b = Math.round(54 + 8 * lifeHeat);
   document.body.style.background =
-    `radial-gradient(ellipse 70% 60% at 50% 42%, rgb(${r},${g},${b}) 0%, #120c07 55%, #0b0805 100%)`;
+    `radial-gradient(ellipse 70% 60% at 50% 42%, rgb(${r},${g},${b}) 0%, #090d22 55%, #05060f 100%)`;
   // осадок прожитого — под золой вчера (запаркован в рейс-UI; данные живут, картинка позже)
   if (el.ashlife) {
     const half = 96 * (1 - Math.exp(-lifeMin / 2400));
@@ -93,13 +94,13 @@ function calcLife() {
     el.ashlife.style.opacity = lifeMin ? (0.10 + 0.15 * lifeHeat).toFixed(2) : 0;
   }
 }
-function plural(n) { return n % 10 === 1 && n % 100 !== 11 ? 'сессия' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'сессии' : 'сессий'); }
-function fmt(min) { const h = Math.floor(min / 60), m = Math.round(min % 60); return h ? `${h} ч ${m} м` : `${m} м`; }
+function plural(n) { return n === 1 ? 'session' : 'sessions'; }
+function fmt(min) { const h = Math.floor(min / 60), m = Math.round(min % 60); return h ? `${h}h ${m}m` : `${m}m`; }
 
 // ---------- ПРОСЬБА ОБ ОЦЕНКЕ (реш. автора 07-22; паттерн ExportGPT, канон методики) ----------
 // Появляется СО 2-й завершённой сессии, только в покое, до первой оценки.
 // ≥4★ → отзывы CWS · 1–3★ → форма фидбека (боль ловим себе, не в стор).
-const RATE_URL = '';      // отзывы CWS: chromewebstore.google.com/detail/<id>/reviews — заполнить на публикации (веха 1)
+const RATE_URL = 'https://chromewebstore.google.com/detail/minimalist-timer/miknhphoakphfhgjajhkalmpdnadkeic/reviews';   // вписан на аппруве (08-01): ≥4★ → отзывы CWS, 1–3★ → форма
 const FEEDBACK_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfTyBVwYzmT3Pvhj0xsmcgE3OzKnR5qCjEeR6HOLIU5msrwkg/viewform';  // форма автора (07-22)
 const rateReady = () =>
   (RATE_URL || FEEDBACK_URL) && !localStorage.getItem('hearth.rated') &&
@@ -171,10 +172,17 @@ function render(st) {
   // РЕЙС К ЗВЕЗДЕ: звезда БЛИЗИТСЯ по прогрессу сессии (--p); тепло среды = --heat. Кольца/дуги нет.
   // финит — прибывает к концу (p→1); ∞ — крейсер (близится к «плато пути», не «прибывает»).
   let prog = 0;
-  if (inSession(phase) || fading(phase)) {
+  if (inSession(phase)) {
     prog = infinite
       ? Math.min(0.6, 1 - Math.exp(-elapsedS() / (el.fast.checked ? 60 : 1800)))
       : Math.min(1, elapsedS() / Math.max(1, engine.sessionDur));
+    lastProg = prog;
+  } else if (fading(phase)) {
+    // рейс окончен → звезда мягко СДУВАЕТСЯ за время ухода (рассвет/выдох), синхронно со звуком
+    // (жалоба автора 08-01: «по завершении звезда должна сдуваться»). От достигнутого размера к 0.
+    const fdur = phase === 'рассвет' ? engine.DAWN : (engine._extDur || 1);
+    const k = 1 - Math.min(1, (nowS() - engine.phaseStart) / Math.max(0.1, fdur));
+    prog = lastProg * k;
   }
   el.stage.style.setProperty('--p', prog.toFixed(3));
   el.stage.style.setProperty('--heat', heat.toFixed(3));
@@ -200,8 +208,10 @@ function startFadePaint() {
   cancelAnimationFrame(fadeRAF);
   const step = () => {
     if (!fading(engine.phase)) return;            // угасание кончилось — дорисовка больше не нужна
-    if (engine.phase === 'угасание') {            // ручная посадка: тепло среды оседает (звезда прибыла, не тушится резко)
-      const k = 1 - Math.min(1, (nowS() - engine.phaseStart) / fadeDur());
+    const fdur = engine.phase === 'рассвет' ? engine.DAWN : (engine._extDur || 1);
+    const k = 1 - Math.min(1, (nowS() - engine.phaseStart) / Math.max(0.1, fdur));
+    el.stage.style.setProperty('--p', (lastProg * k).toFixed(3));   // звезда сдувается плавно (кадрово, оба ухода)
+    if (engine.phase === 'угасание') {            // ручная посадка: тепло среды оседает
       el.stage.style.setProperty('--heat', (0.1 + grownAtExt * 0.6 * k).toFixed(3));
     }
     fadeRAF = requestAnimationFrame(step);
@@ -253,7 +263,7 @@ function killNow() {                                          // клик во �
 // Системный мьют/громкость ОС браузеру недоступны (нет API) — честно показываем только то,
 // что знаем наверняка: свой ползунок. На нуле — перечёркнутый динамик и держим дольше.
 function flashSound() {
-  const muted = +el.volume.value === 0;
+  const muted = volKnob.get() < 0.005;
   el.sndwave.style.display = muted ? 'none' : '';
   el.sndmute.style.display = muted ? '' : 'none';
   el.sndhint.style.opacity = muted ? 0.95 : 0.7;
@@ -394,13 +404,99 @@ const SKY = (() => {
 ['pointerdown', 'pointerup'].forEach((t) => el.finish.addEventListener(t, (e) => e.stopPropagation()));
 el.finish.addEventListener('click', quench);
 
+// ---------- КРУТИЛКА ----------
+// Вертикальное перетаскивание + колесо + стрелки (реш. автора 08-06). Не ползунок: в узком
+// сайдбаре у ползунка ход короткий и точность плохая, а вести крутилку можно сколько угодно.
+// Цифр нет — как и везде в продукте: слушаем, а не считаем.
+const KNOB_R = 17, KNOB_C = 2 * Math.PI * KNOB_R, KNOB_SPAN = 0.75;   // дуга 270°, разрыв внизу
+function makeKnob(node, arc, dot, value, onInput) {
+  let v = Math.max(0, Math.min(1, value));
+  arc.style.strokeDasharray = `0 ${KNOB_C}`;
+  node.querySelector('.ktrack').setAttribute('transform', 'rotate(135 23 23)');
+  node.querySelector('.ktrack').style.strokeDasharray = `${KNOB_SPAN * KNOB_C} ${KNOB_C}`;
+  arc.setAttribute('transform', 'rotate(135 23 23)');
+
+  function paint() {
+    arc.style.strokeDasharray = `${(v * KNOB_SPAN * KNOB_C).toFixed(2)} ${KNOB_C}`;
+    const th = (135 + v * 270) * Math.PI / 180;
+    dot.setAttribute('cx', (23 + KNOB_R * Math.cos(th)).toFixed(2));
+    dot.setAttribute('cy', (23 + KNOB_R * Math.sin(th)).toFixed(2));
+    node.setAttribute('aria-valuenow', Math.round(v * 100));
+  }
+  function set(nv, silent) {
+    const c = Math.max(0, Math.min(1, nv));
+    if (c === v && !silent) return;
+    v = c; paint(); if (!silent) onInput(v);
+  }
+  paint();
+
+  let dragFrom = 0, valFrom = 0;
+  node.addEventListener('pointerdown', (e) => {
+    e.stopPropagation();                       // клик по ручке — не тап по небу (иначе взлёт)
+    node.setPointerCapture(e.pointerId); dragFrom = e.clientY; valFrom = v; node.focus();
+  });
+  node.addEventListener('pointermove', (e) => {
+    if (!node.hasPointerCapture(e.pointerId)) return;
+    set(valFrom + (dragFrom - e.clientY) / 150);   // 150 px = весь ход
+  });
+  ['pointerup', 'pointercancel'].forEach((t) => node.addEventListener(t, (e) => {
+    e.stopPropagation();
+    if (node.hasPointerCapture(e.pointerId)) node.releasePointerCapture(e.pointerId);
+  }));
+  node.addEventListener('wheel', (e) => { e.preventDefault(); set(v - Math.sign(e.deltaY) * 0.04); }, { passive: false });
+  node.addEventListener('keydown', (e) => {
+    const k = e.key;
+    if (k === 'ArrowUp' || k === 'ArrowRight') set(v + 0.02);
+    else if (k === 'ArrowDown' || k === 'ArrowLeft') set(v - 0.02);
+    else if (k === 'Home') set(0); else if (k === 'End') set(1);
+    else return;
+    e.preventDefault();
+  });
+  return { get: () => v, set: (nv) => set(nv, true) };
+}
+
 // ---------- ГРОМКОСТЬ ----------
-function paintVol(v) { const p = (v * 100).toFixed(0); el.volume.style.background = `linear-gradient(90deg, #e8b25c 0%, #b9702a ${p}%, #2a2119 ${p}%)`; }
-el.volume.addEventListener('input', () => { const v = +el.volume.value; engine.setChar({ volume: v }); paintVol(v); });
-paintVol(+el.volume.value);
+// ПЕРСИСТ (крит-узел 08-01): раньше громкость нигде не хранилась — при перезагрузке панели (разворот
+// после сворачивания) ползунок прыгал в HTML-дефолт 0.5, а звук в offscreen оставался на реальном уровне
+// → UI и звук расходились. Теперь localStorage = единый источник: восстанавливаем ползунок И движок.
+// Громкость — тоже крутилка (08-07): полоса осталась только у времени, где длина пути и читается
+// как расстояние. Ползунок громкости под ползунком времени был эклектикой — две одинаковые полосы
+// про совершенно разное.
+const savedVol = localStorage.getItem('hearth.vol');
+const vol0 = savedVol === null ? 0.5 : +savedVol;
+const volKnob = makeKnob(el.volknob, el.volarc, el.voldot, vol0, (v) => {
+  localStorage.setItem('hearth.vol', v);
+  engine.setChar({ volume: v });
+});
+engine.setChar({ volume: vol0 });                 // движок ← восстановленная громкость (совпасть с ручкой)
+
+// ---------- ВОЗДУХ: ручка «шум ⟷ тон» (08-06, дефолт пересмотрен 08-07) ----------
+// ДЕФОЛТ — НОЛЬ ДЛЯ ВСЕХ (решение автора 08-07). Продукт с первой секунды звучит ровно тем, за чем
+// человек пришёл: весь листинг продаёт тёплый шум, и главный боль-ключ — «brown noise no ads».
+// Тон — то, что находят, а не то, что выдают вместо обещанного. Прежняя развилка «новым по центру,
+// старым ноль» вместе с определением старожила снята: делить пользователей стало не на что.
+const MIX_KEY = 'hearth.mix';
+// storage.local, НЕ sync: у sync квота 120 записей в минуту, крутилка при перетаскивании её убьёт
+const store = {
+  get(k, d) {
+    return new Promise((res) => {
+      try { chrome.storage.local.get(k, (o) => res(o && o[k] != null ? o[k] : d)); }
+      catch (e) { const s = localStorage.getItem(k); res(s === null ? d : +s); }
+    });
+  },
+  set(k, v) { try { chrome.storage.local.set({ [k]: v }); } catch (e) { localStorage.setItem(k, v); } },
+};
+
+let mixSaveTimer = 0;
+const mixKnob = makeKnob(el.mixknob, el.mixarc, el.mixdot, 0, (v) => {
+  engine.setMix(v);
+  clearTimeout(mixSaveTimer);                    // тащат ручку — пишем не каждый кадр, а по остановке
+  mixSaveTimer = setTimeout(() => store.set(MIX_KEY, v), 300);
+});
+store.get(MIX_KEY, 0).then((v) => { mixKnob.set(v); engine.setMix(v); });
 
 // ---------- PiP-ВЫНОС ----------
-if (!('documentPictureInPicture' in window)) { el.pip.textContent = 'PiP недоступен в этом браузере'; el.pip.disabled = true; }
+if (!('documentPictureInPicture' in window)) { el.pip.textContent = 'PiP not available in this browser'; el.pip.disabled = true; }
 el.pip.addEventListener('click', async () => {
   if (window.__pipWin) { window.__pipWin.close(); return; }
   try {
@@ -410,22 +506,29 @@ el.pip.addEventListener('click', async () => {
     document.querySelectorAll('style').forEach(s => pip.document.head.appendChild(s.cloneNode(true)));
     pip.document.body.style.cssText = 'margin:0;background:#0e0b08;display:flex;align-items:center;justify-content:center;overflow:hidden;';
     pip.document.body.appendChild(el.stage);
-    el.pip.textContent = 'вернуть жар';
+    el.pip.textContent = 'Return';
     pip.addEventListener('resize', () => { localStorage.setItem('hearth.pipW', pip.innerWidth); localStorage.setItem('hearth.pipH', pip.innerHeight); });
-    pip.addEventListener('pagehide', () => { el.home.appendChild(el.stage); window.__pipWin = null; el.pip.textContent = 'вынести жар'; });
+    pip.addEventListener('pagehide', () => { el.home.appendChild(el.stage); window.__pipWin = null; el.pip.textContent = 'Pop out'; });
   } catch (err) { el.pip.textContent = 'PiP: ' + err.message; console.error('PiP:', err); }
 });
 
 // ---------- НАСТРОЙКИ (прод: энергия + кокон) ----------
-function paintRange(r) { const p = (+r.value * 100).toFixed(0); r.style.background = `linear-gradient(90deg, #e8b25c 0%, #b9702a ${p}%, #2a2119 ${p}%)`; }
 // ЭНЕРГИЯ = СКОРОСТЬ ПОЛЁТА (реш. автора 07-25): больше энергии → искры несутся быстрее (слабо, но заметно).
 // Кокон (маскировка) — только звук, без визуализации (реш. автора: «герметичность» визуально менять нечем).
+// Обе — крутилки, как и «воздух» (08-06): один идиом на все ручки звука, ползунок остался у громкости.
 function setFlySpeed(v) { const s = 0.7 + v * 0.9; el.stage.style.setProperty('--speed', s.toFixed(2)); SKY.speed(s); }   // 0.7 … 1.6; canvas меняет скорость плавно, без скачка
-['energy', 'masking'].forEach((k) => {
-  paintRange(el[k]);
-  el[k].addEventListener('input', () => { engine.setChar({ [k]: +el[k].value }); paintRange(el[k]); if (k === 'energy') setFlySpeed(+el[k].value); });
+[['energy', 'energyknob', 'energyarc', 'energydot', 0.4],
+ ['masking', 'maskknob', 'maskarc', 'maskdot', 0.45]].forEach(([k, node, arc, dot, def]) => {
+  const saved = localStorage.getItem('hearth.' + k);      // персист (как громкость) — не сбрасываться в дефолт при развороте
+  const v0 = saved === null ? def : +saved;
+  makeKnob(el[node], el[arc], el[dot], v0, (v) => {
+    localStorage.setItem('hearth.' + k, v);
+    engine.setChar({ [k]: v });
+    if (k === 'energy') setFlySpeed(v);
+  });
+  engine.setChar({ [k]: v0 });                            // движок ← восстановленное
+  if (k === 'energy') setFlySpeed(v0);
 });
-setFlySpeed(+el.energy.value);
 el.settoggle.addEventListener('click', () => {
   const open = el.settings.hidden;
   el.settings.hidden = !open;
@@ -448,18 +551,27 @@ render(null);
 // (chrome.permissions.request без жеста браузер отклоняет).
 if (IN_EXT) {
   engine.sync();                                   // панель могла открыться поверх уже горящего очага
-  const panelPort = chrome.runtime.connect({ name: 'panel' });
+  // Side panel при сворачивании язычком/крестиком МОЖЕТ сохранять DOM (не перезагружаться) — тогда при
+  // развороте она показывает УСТАРЕВШЕЕ состояние (кнопка finish от давно завершённого рейса, старая звезда).
+  // Досинхронизируемся с домом звука КАЖДЫЙ раз, когда панель снова видима (крит-узел 08-01).
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) engine.sync(); });
   // ЗЕРКАЛО язычка (реш. автора 07-22): клик по язычку при открытой панели = закрыть её.
   // API закрыть панель не умеет — но страница панели может закрыть СЕБЯ.
-  panelPort.onMessage.addListener((msg) => {
-    if (msg && msg.type === 'closeHome') window.close();
-  });
+  // Порт РВЁТСЯ при перезапуске service worker (MV3) — тогда фон думает «панель закрыта» и зеркало
+  // «в каком-то сценарии не закрывает» (жалоба автора 08-01). Переподключаемся при обрыве, пока панель жива.
+  let panelPort = null;
+  function connectPanel() {
+    panelPort = chrome.runtime.connect({ name: 'panel' });
+    panelPort.onMessage.addListener((msg) => { if (msg && msg.type === 'closeHome') window.close(); });
+    panelPort.onDisconnect.addListener(() => { panelPort = null; setTimeout(connectPanel, 250); });
+  }
+  connectPanel();
 
   const GLOW_ORIGINS = { origins: ['<all_urls>'] };
   el.glowrow.hidden = false;
 
   // Тумблер язычка — первая переключалка настроек очага (реш. автора 07-22).
-  // ТРУБА-ИСТИНА = storage.glowEnabled (фон слушает onChanged; крестик на язычке пишет туда же).
+  // ТРУБА-ИСТИНА = storage.glowEnabled (фон слушает onChanged; этот тумблер — единственный переключатель язычка).
   // Права НЕ трогаем при выключении (выданные остаются — включение обратно без системного окна);
   // при включении без прав — запрашиваем (жест жив), отказ = тумблер остаётся выкл.
   async function glowState() {
@@ -485,7 +597,7 @@ if (IN_EXT) {
     paintGlowSwitch();
   });
   chrome.storage.onChanged.addListener((ch, area) => {
-    if (area === 'local' && ch.glowEnabled) paintGlowSwitch();   // крестик на странице щёлкнул — тумблер узнал
+    if (area === 'local' && ch.glowEnabled) paintGlowSwitch();   // glowEnabled сменился где-то ещё — тумблер узнал
   });
   paintGlowSwitch();
 }

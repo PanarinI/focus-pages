@@ -1,15 +1,19 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Рейс к звезде — панель</title>
+  <title>Focus timer — time made of sound</title>
+  <meta name="description" content="The panel of a focus timer whose time is made of sound: warm brown noise that rises as you begin, holds through the session, and eases off as you arrive. Turn the Tone knob to let a tonal layer live above the noise.">
+  <meta property="og:title" content="Focus timer — time made of sound">
+  <meta property="og:description" content="Set a length, tap the sky, and listen. The Tone knob adds a tonal layer above the noise; it resolves when you arrive.">
+  <meta property="og:type" content="website">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-user-select: none; user-select: none; }
     /* Тёплый тёмный космос во ВЕСЬ сайдбар (07-25: небо перестало быть «квадратом, врезанным в интерфейс уголька»).
        Фон подкрашивает calcLife (едва теплеет с прожитым). Не синий сай-фай — тёплая янтарная ночь (капсула). */
     html, body { height: 100%; }
-    body { background: radial-gradient(ellipse 90% 70% at 50% 40%, #1a1109 0%, #120c07 55%, #0b0805 100%);
+    body { background: radial-gradient(ellipse 90% 70% at 50% 40%, #0e1638 0%, #090d22 55%, #05060f 100%);
       color: #c9bdae; font: 13px/1.5 -apple-system, 'Segoe UI', sans-serif; overflow: hidden; position: relative; }
 
     /* НЕБО — звёздное поле на весь сайдбар. Покой: звёзды висят и дышат. Полёт: несутся от звезды-цели
@@ -34,11 +38,16 @@
     /* ЗВЕЗДА-ЦЕЛЬ — одно тёплое присутствие по курсу. Близится по прогрессу (--p): рост = приближение,
        не раздувание («закипеть» невозможно by design). Дышит. Точка схода звёздного потока — здесь. */
     #star { position: fixed; left: 50%; top: 40%; transform: translate(-50%,-50%); pointer-events: none;
-      width: calc(13px + var(--p,0)*104px); height: calc(13px + var(--p,0)*104px); border-radius: 50%;
-      transition: width .6s ease, height .6s ease, opacity .6s ease; opacity: calc(.62 + var(--p,0)*.38);
+      /* размер = приближение: ЛИНЕЙНО по --p (вкус автора 08-01), финиш ≈ 166px.
+         По завершении времени звезда СДУВАЕТСЯ плавно (--p убывает за рассвет/выдох — см. render). */
+      width: calc(16px + var(--p,0)*150px); height: calc(16px + var(--p,0)*150px); border-radius: 50%;
+      /* плавный подход к максимуму и мягкий выход (08-01): ease-out, длиннее — без рывка на концах */
+      transition: width 1.2s cubic-bezier(.25,.8,.35,1), height 1.2s cubic-bezier(.25,.8,.35,1), opacity 1s ease; opacity: calc(.62 + var(--p,0)*.38);
       background: radial-gradient(circle, #fff2d6 0%, #ffd98f 24%, #f2a955 50%, rgba(214,120,70,.26) 74%, rgba(214,120,70,0) 100%);
-      animation: star-breathe 6.5s ease-in-out infinite; will-change: transform; }
-    @keyframes star-breathe { 0%,100% { transform: translate(-50%,-50%) scale(.97); } 46% { transform: translate(-50%,-50%) scale(1.05); } }
+      /* дыхание СПОКОЙНОЕ и постоянное, мягкая амплитуда (08-01: ускорение к концу читалось как
+         «глубоко работающее сердце» — убрано; дыхание не должно частить у большой звезды) */
+      animation: star-breathe 7s ease-in-out infinite; will-change: transform; }
+    @keyframes star-breathe { 0%,100% { transform: translate(-50%,-50%) scale(.985); } 50% { transform: translate(-50%,-50%) scale(1.028); } }
     @media (prefers-reduced-motion: reduce) { #star { animation: none; } }
 
     .num { position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%); font-size: 30px; font-weight: 300;
@@ -102,6 +111,22 @@
     .setrow input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px;
       border-radius: 50%; background: #e8b25c; box-shadow: 0 0 8px rgba(232,178,92,.5); cursor: pointer; }
 
+    /* КРУТИЛКА (08-06) — вертикальное перетаскивание, колесо, стрелки. Не ползунок: у ползунка
+       в узком сайдбаре ход короткий и точность плохая, а крутилку можно вести сколько угодно.
+       Дуга показывает положение; цифр нет — как и везде, слушаем, а не считаем. */
+    .knobs { display: flex; justify-content: center; align-items: flex-start; gap: 40px; }
+    .knobcell { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+    .knobcell .kname { font-size: 12px; color: #9a7c4f; }
+    .knobcell .ico { width: 17px; height: 17px; color: #b9863f; opacity: .8; }
+    .knob { width: 46px; height: 46px; flex: none; cursor: ns-resize; touch-action: none; outline: none;
+      border-radius: 50%; transition: box-shadow .25s; }
+    .knob:hover, .knob:focus-visible { box-shadow: 0 0 0 1px #4a3826, 0 0 14px rgba(232,178,92,.16); }
+    .knob svg { display: block; width: 46px; height: 46px; overflow: visible; }
+    .knob .ktrack { fill: none; stroke: #2a2119; stroke-width: 4; stroke-linecap: round; }
+    .knob .karc { fill: none; stroke: #e8b25c; stroke-width: 4; stroke-linecap: round;
+      filter: drop-shadow(0 0 5px rgba(232,178,92,.45)); transition: stroke .3s; }
+    .knob .kdot { fill: #f0d8b0; }
+
     /* просьба об оценке — со 2-й сессии, тихо, только в покое */
     .ratebar { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #6b5f50; }
     .ratebar[hidden] { display: none; }
@@ -131,7 +156,7 @@
     <div id="star"></div>
     <div class="num" id="num"></div>
     <div id="wrap"></div>
-    <button id="finish" class="finbtn" hidden>☀ завершить</button>
+    <button id="finish" class="finbtn" hidden>☀ Finish</button>
     <svg class="sndhint" id="sndhint" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/>
       <path id="sndwave" d="M15.5 8.8a4 4 0 0 1 0 6.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
@@ -140,62 +165,110 @@
   </div>
 
   <div class="dock">
-    <div class="timerow" id="timerow" title="длина рейса — ухвати и дотащи">
-      <input type="range" id="timeslider" min="0" max="5" step="1" value="2" aria-label="длина рейса">
+    <div class="timerow" id="timerow" title="trip length — grab and drag">
+      <input type="range" id="timeslider" min="0" max="5" step="1" value="2" aria-label="trip length">
       <div class="ticks" id="ticks"><span>5</span><span>15</span><span>25</span><span>45</span><span>90</span><span>∞</span></div>
     </div>
 
-    <div class="vol" title="громкость">
-      <svg viewBox="0 0 24 24" width="17" height="17">
-        <path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/>
-        <path d="M15.5 8.8a4 4 0 0 1 0 6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-      </svg>
-      <input type="range" id="volume" min="0" max="1" step="0.01" value="0.5">
+    <!-- ДВЕ ГЛАВНЫЕ РУЧКИ: сколько звука и из чего он сделан. Полоса осталась только у времени —
+         там она и уместна: длина пути читается как расстояние, а не как поворот. -->
+    <div class="knobs">
+      <div class="knobcell">
+        <div class="knob" id="volknob" role="slider" tabindex="0" aria-label="volume"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+          <svg viewBox="0 0 46 46" aria-hidden="true">
+            <circle class="ktrack" cx="23" cy="23" r="17"/>
+            <circle class="karc" cx="23" cy="23" r="17" id="volarc"/>
+            <circle class="kdot" cx="23" cy="23" r="2" id="voldot"/>
+          </svg>
+        </div>
+        <span class="kname">Volume</span>
+      </div>
+      <div class="knobcell" title="from pure noise to noise with a tone in it">
+        <div class="knob" id="mixknob" role="slider" tabindex="0" aria-label="tone"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <svg viewBox="0 0 46 46" aria-hidden="true">
+            <circle class="ktrack" cx="23" cy="23" r="17"/>
+            <circle class="karc" cx="23" cy="23" r="17" id="mixarc"/>
+            <circle class="kdot" cx="23" cy="23" r="2" id="mixdot"/>
+          </svg>
+        </div>
+        <span class="kname">Tone</span>
+      </div>
     </div>
 
     <button class="settoggle" id="settoggle" aria-expanded="false">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
         <line x1="5" y1="8" x2="19" y2="8"/><circle cx="9" cy="8" r="2.4" fill="#120c07"/>
         <line x1="5" y1="16" x2="19" y2="16"/><circle cx="15" cy="16" r="2.4" fill="#120c07"/>
-      </svg>настройки</button>
+      </svg>Settings</button>
 
     <div class="settings" id="settings" hidden>
-      <div class="setrow" title="сколько звук даёт топлива вниманию — от спокойного до бодрого; и как быстро несёшься">
-        <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L5 14h5l-1 8 8-12h-5l1-8z"/></svg>
-        <span class="lab">энергия</span>
-        <input type="range" id="energy" min="0" max="1" step="0.02" value="0.4">
-      </div>
-      <div class="setrow" title="толщина укрытия от внешних звуков — чем толще, тем плотнее кокон">
-        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
-          <ellipse cx="12" cy="12" rx="6" ry="8.5"/><circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/></svg>
-        <span class="lab">кокон</span>
-        <input type="range" id="masking" min="0" max="1" step="0.02" value="0.45">
+      <!-- Зеркало верхнего ряда: две ручки в линию, только символы. Слова тут лишние —
+           смысл несут значок и ховер, а подпись под каждой ручкой утроила бы текст в панели. -->
+      <div class="knobs">
+        <div class="knobcell" title="calm or lively — and how fast you fly">
+          <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L5 14h5l-1 8 8-12h-5l1-8z"/></svg>
+          <div class="knob" id="energyknob" role="slider" tabindex="0" aria-label="energy"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="40">
+            <svg viewBox="0 0 46 46" aria-hidden="true">
+              <circle class="ktrack" cx="23" cy="23" r="17"/>
+              <circle class="karc" cx="23" cy="23" r="17" id="energyarc"/>
+              <circle class="kdot" cx="23" cy="23" r="2" id="energydot"/>
+            </svg>
+          </div>
+        </div>
+        <div class="knobcell" title="how thick the shelter from outside sound is">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+            <ellipse cx="12" cy="12" rx="6" ry="8.5"/><circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/></svg>
+          <div class="knob" id="maskknob" role="slider" tabindex="0" aria-label="cocoon"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="45">
+            <svg viewBox="0 0 46 46" aria-hidden="true">
+              <circle class="ktrack" cx="23" cy="23" r="17"/>
+              <circle class="karc" cx="23" cy="23" r="17" id="maskarc"/>
+              <circle class="kdot" cx="23" cy="23" r="2" id="maskdot"/>
+            </svg>
+          </div>
+        </div>
       </div>
       <div class="setdiv" role="separator"></div>
-      <div class="setrow" id="glowrow" hidden title="тёплая нить у правой кромки страниц — дверь к рейсу; крестик на ней убирает, этот тумблер возвращает">
+      <div class="setrow" id="glowrow" hidden title="a warm thread at the right edge of pages — a door back to the flight; this toggle shows or hides it">
         <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
           <line x1="4" y1="9.5" x2="20" y2="9.5"/><path d="M7 14h10M9.5 18h5" opacity=".55"/>
         </svg>
-        <span class="lab">язычок</span>
+        <span class="lab">Edge tab</span>
         <div class="swt" id="glowtoggle" role="switch" aria-checked="false" tabindex="0"></div>
       </div>
     </div>
 
-    <div class="ratebar" id="ratebar" hidden title="оценка помогает другим найти рейс">
+    <div class="ratebar" id="ratebar" hidden title="a rating helps others find the flight">
+      <span class="rlab" id="rlab">Rate this flight</span>
       <span id="rstars"></span>
     </div>
 
-    <button class="pipbtn" id="pip" hidden>вынести рейс</button>
+    <button class="pipbtn" id="pip" hidden>Pop out</button>
   </div>
 
   <div class="shelf" id="shelf">
-    <label><input type="checkbox" id="fast"> быстрый (дев)</label>
-    <label><input type="checkbox" id="premium"> премиум-слой</label>
-    <label>гармонизация <input type="range" id="harmony" min="0" max="1" step="0.02" value="0.7"></label>
+    <label><input type="checkbox" id="fast"> fast (dev)</label>
+    <label><input type="checkbox" id="premium"> premium layer</label>
+    <label>harmony <input type="range" id="harmony" min="0" max="1" step="0.02" value="0.7"></label>
   </div>
 
-  <script src="engine.js?b=22"></script>
-  <script src="remote.js?b=22"></script>
-  <script src="hearth.js?b=22"></script>
+  <!-- ================= ПУБЛИЧНЫЙ СТЕНД — единственное место, где он отличается от панели =================
+       Как пересобирать (08-08): engine.js · tone.js · remote.js · hearth.js копируются из
+       extension/ БАЙТ В БАЙТ, руками правится только этот index.html (он = hearth.html + шапка + шим ниже).
+       Никаких форков логики: стенд устарел на две недели ровно потому, что был разовым слепком. -->
+  <script>
+    // Просьба об оценке ведёт на отзывы CWS. В панели это честно — человек уже поставил расширение.
+    // На стенде перед нами прохожий из поста: он ничего не ставил, и звать его писать отзыв нельзя.
+    // Гасим тем же ключом, которым панель помнит уже оценивших, — без правки hearth.js.
+    try { localStorage.setItem('hearth.rated', '1'); } catch (e) {}
+  </script>
+
+  <script src="engine.js?b=34"></script>
+  <script src="tone.js?b=34"></script>
+  <script src="remote.js?b=34"></script>
+  <script src="hearth.js?b=34"></script>
 </body>
 </html>
