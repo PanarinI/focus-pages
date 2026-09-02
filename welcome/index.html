@@ -27,6 +27,10 @@
   }
   .say b{color:#ff6a5c; font-weight:700}
   .shot{width:100%; max-width:940px; height:auto; display:block}
+  /* САЛЮТ (09-02) — как на welcome ExportGPT: конфетти на canvas, один раз при открытии.
+     Кольца вокруг пазла пробовались и отклонены автором: там это работало потому, что была
+     живая кнопка, а у нас картинка. Салют же — про сам факт «поставил», ему кнопка не нужна. */
+  #confetti{position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:9}
   .say2{margin-top:26px}
   .after{
     margin:clamp(26px,4vh,40px) 0 0; text-align:center;
@@ -61,7 +65,8 @@
 </head>
 <body>
 
-  <h1>
+  <canvas id="confetti" aria-hidden="true"></canvas>
+<h1>
     <svg width="42" height="42" viewBox="0 0 64 64" aria-hidden="true">
       <defs><radialGradient id="star">
         <stop offset="0%" stop-color="#ffe6b0"/><stop offset="55%" stop-color="#f0be6e"/><stop offset="100%" stop-color="#b06d1f"/>
@@ -232,5 +237,47 @@
 
   <p class="after">That’s it. Tap the star whenever you need to focus.</p>
 
+
+<script>
+// Салют: сыпется один раз при открытии страницы и исчезает. Палитра — тёплая, продуктовая:
+// те же цвета, что у искры-иконки и звезды, плюс пара холодных искр под звёздное поле.
+(function () {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cv = document.getElementById('confetti'); if (!cv) return;
+  const x = cv.getContext('2d');
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  function size() { cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; x.setTransform(dpr,0,0,dpr,0,0); }
+  size(); addEventListener('resize', size);
+  const COLORS = ['#FFEFC2','#FFC061','#F2941F','#f0be6e','#e8b25c','#ffd98f','#dde3f2'];
+  const P = [];
+  for (let i = 0; i < 130; i++) P.push({
+    x: Math.random() * innerWidth, y: -20 - Math.random() * 340,
+    w: 7 + Math.random() * 8, h: 3.5 + Math.random() * 5,
+    c: COLORS[(Math.random() * COLORS.length) | 0],
+    a: Math.random() * Math.PI * 2, spin: (Math.random() - 0.5) * 0.18,
+    vx: (Math.random() - 0.5) * 2.6, vy: 2.4 + Math.random() * 3.4,
+    o: 1, delay: Math.random() * 60,
+  });
+  let f = 0;
+  (function draw() {
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    let alive = 0;
+    for (const p of P) {
+      if (f < p.delay) { alive++; continue; }
+      p.x += p.vx; p.y += p.vy; p.vy += 0.07; p.a += p.spin;
+      if (p.y > innerHeight * 0.8) p.o -= 0.032;
+      if (p.o <= 0) continue;
+      alive++;
+      x.save(); x.globalAlpha = Math.max(0, p.o);
+      x.translate(p.x, p.y); x.rotate(p.a);
+      x.fillStyle = p.c; x.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      x.restore();
+    }
+    f++;
+    if (alive > 0 || f < 80) requestAnimationFrame(draw);
+    else { x.clearRect(0, 0, innerWidth, innerHeight); cv.remove(); }
+  })();
+})();
+</script>
 </body>
 </html>
