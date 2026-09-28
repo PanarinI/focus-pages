@@ -5,13 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Brown Noise Generator was removed</title>
 <style>
-  /* Канон 5.1: страница после удаления — один вопрос «почему удалили» (Google-форма), чем проще, тем больше ответов (5–15 %).
-     Палитра — как на welcome 1.2 (27.09): тёплое почти-чёрное поле панели, свет звезды.
-     Карточка формы — по образцу fib-pages/uninstall (28.09): чернильная обводка и тень-наклейка. Сама карточка светлая:
-     форма Google прозрачная, её подписи — тёмным текстом, на тёмной карточке они пропадали. Тень — янтарём звезды;
-     обводка — цветом шкалы из иконки: чёрная сливалась с тёмным полем слева и сверху. */
-  :root{ --bg:#231911; --bg2:#0a0908; --warm:#ffb055; --ink:#efe6da; --ink-dim:#a39585; --paper:#f6eee3; --rim:#433a32; }
+  /* Канон 5.1: страница после удаления — один вопрос «почему удалили», чем проще, тем больше ответов (5–15 %).
+     Главное на странице — сам вопрос (слово автора 28.09: «нужно, чтобы главным был вопрос what went wrong?»).
+     Интерфейса Google Forms на странице нет: своё поле шлёт ответ прямо в ту же форму (formResponse) —
+     ответы ложатся в ту же таблицу. Палитра — welcome 1.2: тёплое почти-чёрное поле, свет звезды.
+     Карточка — наклейка: светлая, обводка цветом шкалы из иконки, жёсткая тень янтарём. */
+  :root{ --bg:#231911; --bg2:#0a0908; --warm:#ffb055; --ink:#efe6da; --ink-dim:#a39585;
+         --paper:#f6eee3; --rim:#433a32; --brown:#231911; }
   *{box-sizing:border-box}
+  [hidden]{display:none !important}
   html,body{margin:0}
   /* холст страницы — тёмный: иначе фон body повторяется под контентом и даёт светлую полосу внизу */
   html{background:var(--bg2)}
@@ -22,33 +24,47 @@
     min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
     padding:clamp(28px,6vh,64px) 20px 56px;
   }
+  .removed{
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    margin:0 0 10px; font-size:15px; color:var(--ink-dim); text-align:center;
+  }
+  /* иконка чуть погашена — расширения больше нет */
+  .removed svg{flex:none; transform:rotate(-8deg); filter:grayscale(.45); opacity:.85}
   h1{
-    display:flex; align-items:center; gap:16px;
-    font-size:clamp(26px,4vw,38px); font-weight:700; letter-spacing:-.02em;
-    margin:0 0 12px; text-align:center;
+    margin:0 0 clamp(22px,4vh,34px); text-align:center;
+    font-size:clamp(36px,6.4vw,58px); line-height:1.08; font-weight:700; letter-spacing:-.025em;
   }
-  /* иконка чуть погашена — расширения больше нет; наклон и жёсткая тень — как у образца */
-  h1 svg{flex:none; transform:rotate(-8deg); filter:grayscale(.45) drop-shadow(3px 3px 0 rgba(255,176,85,.55)); opacity:.9}
-  .say{
-    margin:0 0 clamp(22px,3.5vh,34px); text-align:center;
-    font-size:clamp(15px,2vw,18px); color:var(--ink-dim); max-width:48ch;
-  }
-  .say b{color:var(--ink); font-weight:600}
+  .sticker{ width:100%; max-width:560px; transform:rotate(-.5deg); }
   .card{
-    width:100%; max-width:640px; background:var(--paper);
-    border:3px solid var(--rim); border-radius:20px; padding:18px;
-    box-shadow:7px 7px 0 var(--warm); transform:rotate(-.5deg);
+    background:var(--paper); color:var(--brown);
+    border:3px solid var(--rim); border-radius:20px; box-shadow:7px 7px 0 var(--warm);
+    padding:18px;
   }
-  .card iframe{ display:block; width:100%; height:520px; border:none; border-radius:10px; background:transparent; }
-  .fallback{ text-align:center; color:#5c4f41; font-size:16px; font-weight:600; padding:22px 10px; }
-  .fallback a{ color:#9a5410; font-weight:700; text-decoration:none; }
-  .fallback a:hover{ text-decoration:underline; }
-  .back{ margin-top:26px; font-size:14px; color:var(--ink-dim); text-align:center; }
-  .back a{ color:var(--warm); text-decoration:none; font-weight:600; }
-  .back a:hover{ text-decoration:underline; }
-  /* узкое окно: иконка над заголовком (иначе строки уезжают вправо от оси), форме — больше места */
-  @media (max-width:520px){ h1{flex-direction:column; gap:10px} }
-  @media (max-width:440px){ .card{padding:10px} .card iframe{height:600px} }
+  textarea{
+    display:block; width:100%; min-height:128px; resize:vertical; margin:0;
+    font-family:inherit; font-size:18px; line-height:1.5; color:var(--brown); background:#fffaf2;
+    border:2px solid #d9cbb8; border-radius:12px; padding:14px 16px;
+  }
+  textarea::placeholder{color:#766858}
+  textarea:focus{outline:none; border-color:var(--brown); box-shadow:0 0 0 3px rgba(255,176,85,.45)}
+  .row{display:flex; justify-content:flex-end; margin-top:14px}
+  button{
+    font-family:inherit; font-weight:700; font-size:17px; line-height:1; color:var(--brown); background:var(--warm);
+    border:3px solid var(--brown); border-radius:12px; padding:12px 28px; cursor:pointer;
+    box-shadow:4px 4px 0 var(--brown); transition:transform .06s, box-shadow .06s;
+  }
+  button:active{transform:translate(3px,3px); box-shadow:1px 1px 0 var(--brown)}
+  button:focus-visible{outline:3px solid var(--brown); outline-offset:3px}
+  button[aria-disabled="true"]{opacity:.7; cursor:progress}
+  .done:focus{outline:none}
+  button:disabled{opacity:.4; cursor:default; box-shadow:none; transform:none}
+  .done{padding:30px 10px; text-align:center; font-size:20px; font-weight:700}
+  .failed{margin:18px 0 0; font-size:15px; color:var(--ink-dim); text-align:center; max-width:46ch}
+  .failed a, .back a{color:var(--warm); text-decoration:none; font-weight:600}
+  .failed a:hover, .back a:hover{text-decoration:underline}
+  /* узкий телефон: иконка над строкой «…was removed», иначе слово уезжает на вторую строку сбоку от иконки */
+  @media (max-width:420px){ .removed{flex-direction:column; gap:6px} }
+  .back{margin-top:30px; font-size:14px; color:var(--ink-dim); text-align:center}
 </style>
 </head>
 <body>
@@ -76,31 +92,72 @@
     </defs>
   </svg>
 
-  <h1>
-    <svg width="40" height="40" viewBox="0 0 128 128" aria-hidden="true"><use href="#ext-icon"/></svg>
+  <p class="removed">
+    <svg width="28" height="28" viewBox="0 0 128 128" aria-hidden="true"><use href="#ext-icon"/></svg>
     Brown Noise Generator was removed
-  </h1>
-  <p class="say">Thank you for trying it. What made you remove it? One line helps us make the sound better for the next person.</p>
+  </p>
+  <h1 id="q">What went wrong?</h1>
 
-  <div class="card">
-    <iframe id="form" loading="lazy" title="Why did you remove Brown Noise Generator?">Loading…</iframe>
-    <div class="fallback" id="fallback" hidden>
-      Tell us in one line: <a href="mailto:callmestewie90@gmail.com?subject=Why%20I%20removed%20Brown%20Noise%20Generator">callmestewie90@gmail.com</a>
-    </div>
-  </div>
+  <div class="sticker"><div class="card">
+    <form id="ask">
+      <textarea id="answer" aria-labelledby="q" placeholder="One line is enough" maxlength="3000" autofocus></textarea>
+      <div class="row"><button type="submit" id="send">Send</button></div>
+    </form>
+    <div class="done" id="done" role="status" tabindex="-1" hidden>Thank you — we got it.</div>
+  </div></div>
+
+  <p class="failed" id="failed" role="alert" hidden>
+    It didn’t go through. <a id="mail" href="#">Send it by email instead</a> — your text is already filled in.
+  </p>
 
   <p class="back" id="back" hidden>
     Removed it by mistake? <a id="storelink" href="#" target="_blank" rel="noopener">Install Brown Noise Generator again</a>
   </p>
 
   <script>
-    // Форма — Google Forms с одним вопросом (канон 5.1). Пустой FORM_URL — вместо формы строка с письмом
-    // (адрес тот же, что в политике приватности продукта).
-    const FORM_URL  = 'https://docs.google.com/forms/d/e/1FAIpQLSfTyBVwYzmT3Pvhj0xsmcgE3OzKnR5qCjEeR6HOLIU5msrwkg/viewform?embedded=true';
+    // Ответ уходит в Google-форму автора напрямую (formResponse) — те же ответы, та же таблица, без интерфейса формы.
+    // ENTRY — номер поля «What went wrong?» в этой форме; сверен 28.09 подстановкой (viewform?usp=pp_url&entry.…).
+    // Правка вопроса в Google Forms может сменить номер — тогда сверить заново.
+    // no-cors: ответа Google страница не видит; сеть не ответила — предлагаем письмо с уже вписанным текстом.
+    const FORM_ID   = '1FAIpQLSfTyBVwYzmT3Pvhj0xsmcgE3OzKnR5qCjEeR6HOLIU5msrwkg';
+    const ENTRY     = 'entry.1959995510';
+    const EMAIL     = 'callmestewie90@gmail.com';   // тот же адрес, что в политике приватности продукта
+    const SUBJECT   = 'Why I removed Brown Noise Generator';
     const STORE_URL = 'https://chromewebstore.google.com/detail/miknhphoakphfhgjajhkalmpdnadkeic';
-    const f = document.getElementById('form');
-    if (FORM_URL) { f.src = FORM_URL; }
-    else { f.remove(); document.getElementById('fallback').hidden = false; }
+
+    const form = document.getElementById('ask'), ta = document.getElementById('answer'), send = document.getElementById('send');
+    let sending = false;
+    // Enter — отправить (ответ в одну строку, как в чате); Shift+Enter — новая строка
+    ta.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
+    });
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const text = ta.value.trim();
+      if (sending) return;
+      if (!text) { ta.focus(); return; }   // пустое поле — вернуть в поле; кнопка не гаснет (серая кнопка — «то, чего нет», дизайн-код fib)
+      // пока идёт отправка: поле только для чтения (иначе правка молча не уйдёт), кнопка не гаснет через disabled —
+      // иначе фокус с неё падает на body; повтор держит флаг sending
+      sending = true; ta.readOnly = true; send.setAttribute('aria-disabled', 'true'); send.textContent = 'Sending…';
+      document.getElementById('failed').hidden = true;
+      const body = new URLSearchParams({ [ENTRY]: text, fvv: '1', pageHistory: '0' });
+      try {
+        // keepalive — ответ дойдёт, даже если вкладку закрыли во время отправки;
+        // таймаут — зависшая сеть через 10 с уходит в запасной путь письмом, а не держит «Sending…» минуту
+        await fetch(`https://docs.google.com/forms/d/e/${FORM_ID}/formResponse`,
+          { method: 'POST', mode: 'no-cors', body, keepalive: true, signal: AbortSignal.timeout(10000) });
+        form.hidden = true;
+        const done = document.getElementById('done');
+        done.hidden = false; done.focus();
+      } catch (err) {
+        document.getElementById('failed').hidden = false;
+        ta.readOnly = false; send.removeAttribute('aria-disabled'); send.textContent = 'Send'; sending = false;
+      }
+    });
+    // письмо собирается в момент щелчка — из того, что в поле сейчас
+    document.getElementById('mail').addEventListener('click', e => {
+      e.currentTarget.href = `mailto:${EMAIL}?subject=${encodeURIComponent(SUBJECT)}&body=${encodeURIComponent(ta.value.trim())}`;
+    });
     if (STORE_URL) {
       document.getElementById('storelink').href = STORE_URL;
       document.getElementById('back').hidden = false;
