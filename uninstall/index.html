@@ -3,11 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Minimalist Timer was removed</title>
+<title>Brown Noise Generator was removed</title>
 <style>
-  :root{ --bg:#0e1638; --bg2:#05060f; --warm:#f0be6e; --ink:#dde3f2; --ink-dim:#8b95b5; }
+  /* Канон 5.1: страница после удаления — один вопрос «почему удалили» (Google-форма), чем проще, тем больше ответов (5–15 %).
+     Палитра — как на welcome 1.2 (27.09): тёплое почти-чёрное поле панели, свет звезды.
+     Карточка формы — по образцу fib-pages/uninstall (28.09): чернильная обводка и тень-наклейка. Сама карточка светлая:
+     форма Google прозрачная, её подписи — тёмным текстом, на тёмной карточке они пропадали. Тень — янтарём звезды;
+     обводка — цветом шкалы из иконки: чёрная сливалась с тёмным полем слева и сверху. */
+  :root{ --bg:#231911; --bg2:#0a0908; --warm:#ffb055; --ink:#efe6da; --ink-dim:#a39585; --paper:#f6eee3; --rim:#433a32; }
   *{box-sizing:border-box}
   html,body{margin:0}
+  /* холст страницы — тёмный: иначе фон body повторяется под контентом и даёт светлую полосу внизу */
+  html{background:var(--bg2)}
   body{
     background:radial-gradient(130% 90% at 50% 0%, var(--bg) 0%, var(--bg2) 66%);
     color:var(--ink);
@@ -16,55 +23,81 @@
     padding:clamp(28px,6vh,64px) 20px 56px;
   }
   h1{
-    display:flex; align-items:center; gap:14px;
-    font-size:clamp(26px,4vw,38px); font-weight:600; letter-spacing:-.02em;
+    display:flex; align-items:center; gap:16px;
+    font-size:clamp(26px,4vw,38px); font-weight:700; letter-spacing:-.02em;
     margin:0 0 12px; text-align:center;
   }
+  /* иконка чуть погашена — расширения больше нет; наклон и жёсткая тень — как у образца */
+  h1 svg{flex:none; transform:rotate(-8deg); filter:grayscale(.45) drop-shadow(3px 3px 0 rgba(255,176,85,.55)); opacity:.9}
   .say{
     margin:0 0 clamp(22px,3.5vh,34px); text-align:center;
     font-size:clamp(15px,2vw,18px); color:var(--ink-dim); max-width:48ch;
   }
-  .say b{color:var(--warm); font-weight:600}
+  .say b{color:var(--ink); font-weight:600}
   .card{
-    width:100%; max-width:640px; background:rgba(255,255,255,.035);
-    border:1px solid rgba(255,255,255,.09); border-radius:16px; padding:18px;
+    width:100%; max-width:640px; background:var(--paper);
+    border:3px solid var(--rim); border-radius:20px; padding:18px;
+    box-shadow:7px 7px 0 var(--warm); transform:rotate(-.5deg);
   }
   .card iframe{ display:block; width:100%; height:520px; border:none; border-radius:10px; background:transparent; }
-  .fallback{ text-align:center; color:var(--ink-dim); font-size:15px; padding:26px 10px; }
-  .fallback a{ color:var(--warm); text-decoration:none; }
-  .back{ margin-top:22px; font-size:14px; color:var(--ink-dim); text-align:center; }
+  .fallback{ text-align:center; color:#5c4f41; font-size:16px; font-weight:600; padding:22px 10px; }
+  .fallback a{ color:#9a5410; font-weight:700; text-decoration:none; }
+  .fallback a:hover{ text-decoration:underline; }
+  .back{ margin-top:26px; font-size:14px; color:var(--ink-dim); text-align:center; }
   .back a{ color:var(--warm); text-decoration:none; font-weight:600; }
   .back a:hover{ text-decoration:underline; }
+  /* узкое окно: иконка над заголовком (иначе строки уезжают вправо от оси), форме — больше места */
+  @media (max-width:520px){ h1{flex-direction:column; gap:10px} }
+  @media (max-width:440px){ .card{padding:10px} .card iframe{height:600px} }
 </style>
 </head>
 <body>
 
+  <!-- ИКОНКА РАСШИРЕНИЯ — «шкала и звезда» (1.2). Не рисуется по памяти: перенесена один в один с welcome,
+       а туда — из мастера `sound-focus-timer/lab/graphics/icon-2026-09-26-b-dajl.svg`. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <radialGradient id="ic-pole" cx="64" cy="48" r="96" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#231911"/><stop offset=".5" stop-color="#100d0b"/><stop offset="1" stop-color="#0a0908"/>
+      </radialGradient>
+      <radialGradient id="ic-oreol" cx="64" cy="46" r="32" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#ffb055" stop-opacity=".62"/><stop offset=".45" stop-color="#ffb055" stop-opacity=".2"/><stop offset="1" stop-color="#ffb055" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="ic-zvezda" cx="64" cy="46" r="11.5" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#fff5e6"/><stop offset=".55" stop-color="#ffd9a0"/><stop offset="1" stop-color="#ffb866"/>
+      </radialGradient>
+      <g id="ext-icon">
+        <rect width="128" height="128" rx="22" fill="url(#ic-pole)"/>
+        <path d="M 22 88 A 42 42 0 0 1 106 88" fill="none" stroke="#433a32" stroke-width="11" stroke-linecap="round"/>
+        <path d="M 22 88 A 42 42 0 0 1 64 46" fill="none" stroke="#ffb055" stroke-width="11" stroke-linecap="round"/>
+        <circle cx="64" cy="46" r="32" fill="url(#ic-oreol)"/>
+        <circle cx="64" cy="46" r="11.5" fill="url(#ic-zvezda)"/>
+      </g>
+    </defs>
+  </svg>
+
   <h1>
-    <svg width="38" height="38" viewBox="0 0 64 64" aria-hidden="true">
-      <defs><radialGradient id="g"><stop offset="0" stop-color="#f0be6e"/><stop offset="1" stop-color="#7a5a2a"/></radialGradient></defs>
-      <circle cx="32" cy="32" r="14" fill="url(#g)" opacity=".4"/>
-    </svg>
-    The star has dimmed
+    <svg width="40" height="40" viewBox="0 0 128 128" aria-hidden="true"><use href="#ext-icon"/></svg>
+    Brown Noise Generator was removed
   </h1>
-  <p class="say">Thanks for giving <b>Minimalist Timer</b> a try. If you tell us why you left,
-  the next flight will be smoother for the next person — it takes half a minute.</p>
+  <p class="say">Thank you for trying it. What made you remove it? One line helps us make the sound better for the next person.</p>
 
   <div class="card">
-    <iframe id="form" loading="lazy" title="Why did you remove Minimalist Timer?">Loading…</iframe>
+    <iframe id="form" loading="lazy" title="Why did you remove Brown Noise Generator?">Loading…</iframe>
     <div class="fallback" id="fallback" hidden>
-      The short «why» form will appear here soon.<br>
-      Until then — thank you for the time you spent with us.
+      Tell us in one line: <a href="mailto:callmestewie90@gmail.com?subject=Why%20I%20removed%20Brown%20Noise%20Generator">callmestewie90@gmail.com</a>
     </div>
   </div>
 
   <p class="back" id="back" hidden>
-    Changed your mind? <a id="storelink" href="#" target="_blank">Reinstall Minimalist Timer</a>
+    Removed it by mistake? <a id="storelink" href="#" target="_blank" rel="noopener">Install Brown Noise Generator again</a>
   </p>
 
   <script>
-    // Стор-ссылка появится после публикации (веха 1).
+    // Форма — Google Forms с одним вопросом (канон 5.1). Пустой FORM_URL — вместо формы строка с письмом
+    // (адрес тот же, что в политике приватности продукта).
     const FORM_URL  = 'https://docs.google.com/forms/d/e/1FAIpQLSfTyBVwYzmT3Pvhj0xsmcgE3OzKnR5qCjEeR6HOLIU5msrwkg/viewform?embedded=true';
-    const STORE_URL = '';   // https://chromewebstore.google.com/detail/<id>
+    const STORE_URL = 'https://chromewebstore.google.com/detail/miknhphoakphfhgjajhkalmpdnadkeic';
     const f = document.getElementById('form');
     if (FORM_URL) { f.src = FORM_URL; }
     else { f.remove(); document.getElementById('fallback').hidden = false; }
