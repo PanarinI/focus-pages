@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Brown Noise Generator was removed</title>
+<title>Brown Noise Generator — what went wrong?</title>
 <style>
-  /* Канон 5.1: страница после удаления — один вопрос «почему удалили», чем проще, тем больше ответов (5–15 %).
+  /* Страница после оценки 1–3 в расширении — тот же один вопрос, что после удаления, чем проще, тем больше ответов (5–15 %).
      Главное на странице — сам вопрос (слово автора 28.09: «нужно, чтобы главным был вопрос what went wrong?»).
      Интерфейса Google Forms на странице нет: своё поле шлёт ответ прямо в ту же форму (formResponse) —
      ответы ложатся в ту же таблицу. Палитра — welcome 1.2: тёплое почти-чёрное поле, свет звезды.
@@ -24,12 +24,12 @@
     min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
     padding:clamp(28px,6vh,64px) 20px 56px;
   }
-  .removed{
+  .kicker{
     display:flex; align-items:center; justify-content:center; gap:10px;
     margin:0 0 10px; font-size:15px; color:var(--ink-dim); text-align:center;
   }
-  /* иконка чуть погашена — расширения больше нет */
-  .removed svg{flex:none; transform:rotate(-8deg); filter:grayscale(.45); opacity:.85}
+  /* иконка продукта — видно, о чём речь */
+  .kicker svg{flex:none; transform:rotate(-8deg); }
   h1{
     margin:0 0 clamp(22px,4vh,34px); text-align:center;
     font-size:clamp(36px,6.4vw,58px); line-height:1.08; font-weight:700; letter-spacing:-.025em;
@@ -62,8 +62,8 @@
   .failed{margin:18px 0 0; font-size:15px; color:var(--ink-dim); text-align:center; max-width:46ch}
   .failed a, .back a{color:var(--warm); text-decoration:none; font-weight:600}
   .failed a:hover, .back a:hover{text-decoration:underline}
-  /* узкий телефон: иконка над строкой «…was removed», иначе слово уезжает на вторую строку сбоку от иконки */
-  @media (max-width:420px){ .removed{flex-direction:column; gap:6px} }
+  /* узкий телефон: иконка над строкой над вопросом */
+  @media (max-width:420px){ .kicker{flex-direction:column; gap:6px} }
   .back{margin-top:30px; font-size:14px; color:var(--ink-dim); text-align:center}
 </style>
 </head>
@@ -92,9 +92,9 @@
     </defs>
   </svg>
 
-  <p class="removed">
+  <p class="kicker">
     <svg width="28" height="28" viewBox="0 0 128 128" aria-hidden="true"><use href="#ext-icon"/></svg>
-    Brown Noise Generator was removed
+    Sorry about that.
   </p>
   <h1 id="q">What went wrong?</h1>
 
@@ -110,9 +110,6 @@
     It didn’t go through. <a id="mail" href="#">Send it by email instead</a> — your text is already filled in.
   </p>
 
-  <p class="back" id="back" hidden>
-    Removed it by mistake? <a id="storelink" href="#" target="_blank" rel="noopener">Install Brown Noise Generator again</a>
-  </p>
 
   <script>
     // Ответ уходит в Google-форму автора напрямую (formResponse) — те же ответы, та же таблица, без интерфейса формы.
@@ -123,10 +120,11 @@
     const ENTRY     = 'entry.1959995510';
     // откуда ответ — пометкой в начале того же ответа: «[uninstall] …» / «[rating 2★] …» (одна таблица на продукт;
     // второго вопроса в форме нет — слово автора 28.09)
-    const SOURCE    = 'uninstall';
+    // звёзды приходят из расширения: …/feedback?stars=2
+    const STARS     = +new URLSearchParams(location.search).get('stars');
+    const SOURCE    = STARS >= 1 && STARS <= 5 ? `rating ${STARS}★` : 'rating';
     const EMAIL     = 'hello@fanarlabs.com';   // публично — только адрес бренда (garden-meta/POCHTY.md); вход CWS не светить
     const SUBJECT   = 'Why I removed Brown Noise Generator';
-    const STORE_URL = 'https://chromewebstore.google.com/detail/miknhphoakphfhgjajhkalmpdnadkeic';
 
     const form = document.getElementById('ask'), ta = document.getElementById('answer'), send = document.getElementById('send');
     let sending = false;
@@ -161,10 +159,6 @@
     document.getElementById('mail').addEventListener('click', e => {
       e.currentTarget.href = `mailto:${EMAIL}?subject=${encodeURIComponent(SUBJECT)}&body=${encodeURIComponent(ta.value.trim())}`;
     });
-    if (STORE_URL) {
-      document.getElementById('storelink').href = STORE_URL;
-      document.getElementById('back').hidden = false;
-    }
   </script>
 </body>
 </html>
