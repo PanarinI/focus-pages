@@ -136,12 +136,12 @@
       e.preventDefault();
       const text = ta.value.trim();
       if (sending) return;
-      if (!text) { ta.focus(); return; }   // пустое поле — вернуть в поле; кнопка не гаснет (серая кнопка — «то, чего нет», дизайн-код fib)
+      // поле не обязательное (слово автора 03.10): пустой Send — тоже ответ, уходит одна пометка «[rating N★]» — сама оценка
       // пока идёт отправка: поле только для чтения (иначе правка молча не уйдёт), кнопка не гаснет через disabled —
       // иначе фокус с неё падает на body; повтор держит флаг sending
       sending = true; ta.readOnly = true; send.setAttribute('aria-disabled', 'true'); send.textContent = 'Sending…';
       document.getElementById('failed').hidden = true;
-      const body = new URLSearchParams({ [ENTRY]: `[${SOURCE}] ${text}`, fvv: '1', pageHistory: '0' });
+      const body = new URLSearchParams({ [ENTRY]: text ? `[${SOURCE}] ${text}` : `[${SOURCE}]`, fvv: '1', pageHistory: '0' });
       try {
         // keepalive — ответ дойдёт, даже если вкладку закрыли во время отправки;
         // таймаут — зависшая сеть через 10 с уходит в запасной путь письмом, а не держит «Sending…» минуту
